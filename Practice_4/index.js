@@ -52,6 +52,11 @@ app.get('/users', function(req, res) {
     res.writeHead(200, {'Content-Type': 'application/json'})
     User.findAll().then(users => res.json(users));
 });
+app.get('/users/ascending', function (req, res){
+    res.sendStatus(200);
+    res.writeHead(200, {'Content-Type' : 'application/json'})
+
+});
 app.get('/users/:id', function(req, res) {
     if (isUserExists(Number(req.params.id)) === undefined) {
         res.status(404);
