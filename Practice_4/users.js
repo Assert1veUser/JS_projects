@@ -1,4 +1,4 @@
-const { getUser } = require('./sequelize/select')
+const { getUser } = require('./index')
 
 async function isUserExists(id) {
     const user = await getUser(id)

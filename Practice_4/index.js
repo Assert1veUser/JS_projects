@@ -1,17 +1,21 @@
+const crypto = require("crypto");
 const express = require('express');
 const Sequelize = require('sequelize');
 const {isUserValid, isUserExists} = require('./users');
+const { Op, STRING} = require("sequelize");
 
 
 const app = express();
 const port = 3000;
-
+const cors = require("cors");
+app.use(cors());
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.get('/', (req, res) => res.send('Users App'));
 
 app.listen(port, () => console.log(`Practice_4 listening on port ${port}!`));
 const path = require('path');
+const {use} = require("express/lib/router");
 const dataBasePath = path.join(__dirname, './database.sqlite');
 
 const sequelize = new Sequelize({
@@ -47,55 +51,104 @@ const User = sequelize.define('users', {
         });
     });*/
 
-app.get('/users', function(req, res) {
-    res.sendStatus(200);
-    res.writeHead(200, {'Content-Type': 'application/json'})
-    User.findAll().then(users => res.json(users));
-});
+app.get('/users', function (req, res){
+    console.log('req.query', req.query)
+    const sort = req.query.sort
+    const filterName = req.query.name
+
+    const sortValue = sort === 'ASC' ? 'ASC' : "DESC"
+
+    const options = {
+        order: [
+            ['name', sortValue]
+        ]
+    }
+    if (filterName) {
+        options.where = {
+            name: {
+                [Op.substring]: filterName
+            }
+        }
+    }
+
+    console.log(options)
+    
+    res.status(200);
+    User.findAll(options).then(users => res.json(users));
+})
 app.get('/users/ascending', function (req, res){
-    res.sendStatus(200);
-    res.writeHead(200, {'Content-Type' : 'application/json'})
+    res.status(200);
     User.findAll().then(users => res.json(users.sort(function(a, b) {
         return parseFloat(a.id) - parseFloat(b.id);
     })))
 });
+app.get('/users/descending', function (req, res){
+    res.status(200);
+    User.findAll().then(users => res.json(users.sort(function(a, b) {
+        return parseFloat(b.id) - parseFloat(a.id);
+    })))
+});
 app.get('/users/:id', function(req, res) {
-    if (isUserExists(Number(req.params.id)) === undefined) {
+    if (User.findAll({ where: { id: Number(req.params.id)} }) === undefined){
         res.status(404);
         res.send('Нет такого пользователя')
         return
     }
-    res.sendStatus(200);
-    res.writeHead(200, {'Content-Type': 'application/json'})
+    res.status(200);
     User.findAll({ where: { id: Number(req.params.id)} }).then(users => res.json(users));
 });
 app.post('/users', function(req, res) {
-    
-    User.create({ id: req.body.id, name: req.body.name }).then(function(user) {
-        res.sendStatus(200);
-        res.writeHead(200, {'Content-Type': 'application/json'})
+    if(Number(req.params.id) === undefined && Number(req.params.name) === undefined){
+        res.status(404);
+        res.send('Нет такого пользователя')
+        return
+    }
+    User.create({ id: 7, name: req.body.name }).then(function(user) {
+        res.status(200);
         res.json(user);
     });
 
 });
 app.put('/users/:id', function(req, res) {
+    if (User.findAll({ where: { id: Number(req.params.id)} }) === undefined){
+        res.status(404);
+        res.send('Нет такого пользователя')
+        return
+    }
     User.findByPk(Number(req.params.id)).then(function(user) {
         user.update({
-            id: req.body.id,
             name: req.body.name
         }).then((user) => {
-            res.sendStatus(200);
-            res.writeHead(200, {'Content-Type': 'application/json'})
+            res.status(200);
             res.json(user);
         });
     });
-
+});
+app.put('/users/name/:id', function(req, res) {
+    if (User.findAll({ where: { id: Number(req.params.id)} }) === undefined){
+        res.status(404);
+        res.send('Нет такого пользователя')
+        return
+    }
+    User.findByPk(Number(req.params.id)).then(function(user) {
+        user.update({
+            name: req.body.name
+        }).then((user) => {
+            res.status(200);
+            res.json(user);
+        });
+    });
 });
 app.delete('/users/:id', function(req, res) {
+    if (User.findAll({ where: { id: Number(req.params.id)} }) === undefined){
+        res.status(404);
+        res.send('Нет такого пользователя')
+        return
+    }
     User.findByPk(Number(req.params.id)).then(function(user) {
         user.destroy();
     }).then((user) => {
-        res.sendStatus(200);
+        res.status(200);
     });
 });
 
