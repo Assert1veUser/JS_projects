@@ -29,6 +29,21 @@ document.getElementById('updateUser').addEventListener('click', async ()=>{
             body: JSON.stringify({name})
         });
     }
+    document.location.reload();
+})
+document.getElementById('deleteUser').addEventListener('click', async () => {
+    const inputId = document.getElementById('IdUserDelete');
+    const id = inputId.value;
+    if(id){
+        const res = fetch(`http://localhost:3000/users/${id}`, {
+            method: 'DELETE',
+            headers:{
+                'Content-Type' : 'application/json',
+            }
+        });
+    }
+    document.location.reload();
+
 })
 async function getAllUsers(){
     const res = await fetch("http://localhost:3000/users");
@@ -58,8 +73,6 @@ async function deleteUser(id){
             'Content-Type' : 'application/json',
         }
     });
-    const data = await res.json();
-    console.log(data);
-    document.getElementById(id).remove();
+    document.getElementById(id).remove();;
 }
 

@@ -9,8 +9,7 @@ const app = express();
 const port = 3000;
 const cors = require("cors");
 app.use(cors());
-const bodyParser = require('body-parser');
-app.use(bodyParser.json());
+body
 app.get('/', (req, res) => res.send('Users App'));
 
 app.listen(port, () => console.log(`Practice_4 listening on port ${port}!`));
@@ -103,7 +102,7 @@ app.post('/users', function(req, res) {
         res.send('Нет такого пользователя')
         return
     }
-    User.create({ id: 7, name: req.body.name }).then(function(user) {
+    User.create({ id: 12, name: req.body.name }).then(function(user) {
         res.status(200);
         res.json(user);
     });

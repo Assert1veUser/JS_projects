@@ -18,8 +18,8 @@ app.get('/express_backend', (req, res) => { //Строка 9
 });
 app.get('/users', (req , res) => {
     res.status(200);
-    res.writeHead(200, {'Content-Type': 'application/json'})
     res.send(users)
+    res.writeHead(200, {'Content-Type': 'application/json'})
 })
 app.get('/users/:id', (req , res) => {
     const userId = Number(req.params.id)
@@ -43,8 +43,9 @@ app.post('/users', (req, res) => {
     }
     users.push(dataUser)
     res.status(200);
-    res.writeHead(200, {'Content-Type': 'application/json'})
     res.send(dataUser)
+    res.writeHead(200, {'Content-Type': 'application/json'})
+
 })
 app.put('/users/:id', function (req, res) {
     const valueId = Number(req.params.id)
